@@ -6,8 +6,6 @@ import {
     useNavigate,
 } from "react-router-dom";
 
-import * as Tone from "tone";
-
 import { supabase } from "../../lib/supabase";
 
 // ============================================================
@@ -108,6 +106,7 @@ function getInitials(firstName, lastName) {
 
 async function playIncomingMessageSound() {
     try {
+        const Tone = await import("tone");
         await Tone.start();
 
         const synth = new Tone.Synth({
@@ -135,6 +134,7 @@ async function playIncomingMessageSound() {
 
 async function playAnnouncementSound() {
     try {
+        const Tone = await import("tone");
         await Tone.start();
 
         const synth = new Tone.Synth({
@@ -586,7 +586,6 @@ export default function MainLayout() {
                     event: "*",
                     schema: "public",
                     table: "announcements",
-                    filter: `school_id=eq.${profile.school_id}`,
                 },
                 async () => {
                     const { data, error } = await supabase
@@ -717,7 +716,34 @@ export default function MainLayout() {
                     });
                 }
             )
-            .subscribe();
+            .subscribe((status, error) => {
+                console.log("📡 Announcements realtime:", status);
+
+                if (error) {
+                    console.error(
+                        "❌ Announcements realtime error:",
+                        error
+                    );
+                }
+
+                if (status === "SUBSCRIBED") {
+                    console.log(
+                        "✅ Announcements realtime ulandi"
+                    );
+                }
+
+                if (status === "CHANNEL_ERROR") {
+                    console.error(
+                        "❌ Announcements realtime CHANNEL_ERROR"
+                    );
+                }
+
+                if (status === "TIMED_OUT") {
+                    console.error(
+                        "⏱️ Announcements realtime TIMED_OUT"
+                    );
+                }
+            });
 
         return () => supabase.removeChannel(channel);
     }, [user?.id, profile?.school_id, profile?.role, profile?.student_id]);
