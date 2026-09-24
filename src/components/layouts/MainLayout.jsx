@@ -2232,29 +2232,57 @@ export default function MainLayout() {
                                                 py-1.5
                                             "
                                         >
-
                                             <div
                                                 className={`
-                                                    flex
-                                                    h-8
-                                                    w-8
-                                                    items-center
-                                                    justify-center
-                                                    rounded-xl
-                                                    ${active
+        relative
+        flex
+        h-8
+        w-8
+        items-center
+        justify-center
+        rounded-xl
+        ${active
                                                         ? "bg-black text-white"
                                                         : "text-[#8A8A8A]"
                                                     }
-                                                `}
+    `}
                                             >
                                                 <i
                                                     className={`
-                                                        ${item.icon}
-                                                        text-[13px]
-                                                    `}
+            ${item.icon}
+            text-[13px]
+        `}
                                                 />
-                                            </div>
 
+                                                {item.href === "/teacher/messages" &&
+                                                    unreadMessageCount > 0 && (
+                                                        <span
+                                                            className="
+                    absolute
+                    -right-1
+                    -top-1
+                    flex
+                    h-4
+                    min-w-4
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-red-500
+                    px-1
+                    text-[9px]
+                    font-black
+                    leading-none
+                    text-white
+                    ring-2
+                    ring-white
+                "
+                                                        >
+                                                            {unreadMessageCount > 99
+                                                                ? "99+"
+                                                                : unreadMessageCount}
+                                                        </span>
+                                                    )}
+                                            </div>
                                             <span
                                                 className={`
                                                     max-w-15
