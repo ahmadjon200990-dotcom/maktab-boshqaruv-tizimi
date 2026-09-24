@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f1f5f9;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+
+textarea::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+textarea {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

@@ -1,0 +1,1 @@
+export default function Input({label,...props}){return <label className="block space-y-1"><span className="text-sm font-medium">{label}</span><input {...props} className="w-full rounded-lg border p-3 outline-none focus:ring-2 focus:ring-blue-500"/></label>}

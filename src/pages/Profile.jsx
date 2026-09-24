@@ -1,0 +1,1 @@
+import {useAuth} from '../context/AuthContext';export default function Profile(){const {profile}=useAuth();return <div><h2 className="text-3xl font-bold">Profil</h2><pre className="mt-4 bg-white p-4 rounded-xl">{JSON.stringify(profile,null,2)}</pre></div>}
