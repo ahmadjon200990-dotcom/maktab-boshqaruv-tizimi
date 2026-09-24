@@ -301,18 +301,54 @@ export default function MainLayout() {
         let notificationTimer;
 
         const loadUnreadMessages = async () => {
-            const { count, error } = await supabase
-                .from("messages")
-                .select("id", { count: "exact", head: true })
-                .neq("sender_id", user.id)
-                .eq("is_read", false);
+            try {
+                // Faqat shu foydalanuvchi qatnashayotgan suhbatlardagi
+                // boshqa odam yuborgan o'qilmagan xabarlarni sanaymiz.
+                const { data: participantRows, error: participantError } =
+                    await supabase
+                        .from("conversation_participants")
+                        .select("conversation_id")
+                        .eq("user_id", user.id);
 
-            if (error) {
-                console.error("Unread messages error:", error);
-                return;
+                if (participantError) {
+                    console.error(
+                        "Unread conversations error:",
+                        participantError
+                    );
+                    return;
+                }
+
+                const conversationIds = [
+                    ...new Set(
+                        (participantRows || [])
+                            .map((row) => row.conversation_id)
+                            .filter(Boolean)
+                    ),
+                ];
+
+                if (conversationIds.length === 0) {
+                    if (mounted) setUnreadMessageCount(0);
+                    return;
+                }
+
+                const { count, error } = await supabase
+                    .from("messages")
+                    .select("id", { count: "exact", head: true })
+                    .in("conversation_id", conversationIds)
+                    .neq("sender_id", user.id)
+                    .eq("is_read", false);
+
+                if (error) {
+                    console.error("Unread messages error:", error);
+                    return;
+                }
+
+                if (mounted) {
+                    setUnreadMessageCount(count || 0);
+                }
+            } catch (error) {
+                console.error("Unread messages load error:", error);
             }
-
-            if (mounted) setUnreadMessageCount(count || 0);
         };
 
         const showMessageNotification = async (message) => {
@@ -2340,6 +2376,7 @@ export default function MainLayout() {
 
                                             <div
                                                 className={`
+                                                    relative
                                                     flex
                                                     h-8
                                                     w-8
@@ -2358,6 +2395,36 @@ export default function MainLayout() {
                                                         text-[13px]
                                                     `}
                                                 />
+
+                                                {item.href === "/teacher/messages" &&
+                                                    unreadMessageCount > 0 && (
+                                                        <span
+                                                            className="
+                                                                absolute
+                                                                -right-2
+                                                                -top-2
+                                                                z-20
+                                                                flex
+                                                                h-5
+                                                                min-w-5
+                                                                items-center
+                                                                justify-center
+                                                                rounded-full
+                                                                bg-[#EF4444]
+                                                                px-1
+                                                                text-[9px]
+                                                                font-black
+                                                                leading-none
+                                                                text-white
+                                                                ring-2
+                                                                ring-white
+                                                            "
+                                                        >
+                                                            {unreadMessageCount > 99
+                                                                ? "99+"
+                                                                : unreadMessageCount}
+                                                        </span>
+                                                    )}
                                             </div>
 
                                             <span
